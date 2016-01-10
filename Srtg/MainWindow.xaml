@@ -1,0 +1,90 @@
+﻿<Window x:Class="Srtg.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Srtg"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="460" Width="660" MinHeight="300" MinWidth="400" Loaded="Window_Loaded" SizeChanged="Window_SizeChanged" Closing="Window_Closing" Icon="pack://application:,,,/Resources/SRTG.ico">
+    <Grid x:Name="mainGrid">
+
+        <Grid x:Name="grdNoConfiguration">
+            <Button x:Name="linkOpenSettings" Content="Open settings window" Click="linkOpenSettings_Click" VerticalAlignment="Top" Width="125" Style="{DynamicResource HyperlinkLikeButton}" Margin="0,108,0,0" TextBlock.TextAlignment="Center" />
+            <TextBlock Text="or" VerticalAlignment="Top" Margin="0,129,0,0" TextBlock.TextAlignment="Center" />
+            <Button x:Name="linkOpenWizard" Content="Open configuration wizard" Click="linkOpenWizard_Click" VerticalAlignment="Top" Width="145" TextBlock.TextAlignment="Center" Style="{DynamicResource HyperlinkLikeButton}" Margin="0,150,0,0" />
+            <TextBlock Text="or" VerticalAlignment="Top" Margin="0,172,-0.4,0" TextBlock.TextAlignment="Center" />
+            <Button x:Name="linkOpenFile" Content="Open SRTG configuration file" Click="linkOpenFile_Click" VerticalAlignment="Top" Width="155" TextBlock.TextAlignment="Center" Style="{DynamicResource HyperlinkLikeButton}" Margin="0,193,0,0" />
+        </Grid>
+        <Canvas Name="cnvChart" Margin="0,27,0,24.2" />
+        <StatusBar Height="24" VerticalAlignment="Bottom" >
+            <TextBlock Text="Status :" FontWeight="Bold"/>
+            <TextBlock x:Name="lblCollectorStatus" Text="" Width="70" />
+            <Separator/>
+            <TextBlock Text="Max In:" FontWeight="Bold"/>
+            <TextBlock Name="lblMaxIn" Text="-" Width="68" Foreground="#FF095A00" FontWeight="Bold"/>
+            <TextBlock Text="Max Out:" FontWeight="Bold"/>
+            <TextBlock Name="lblMaxOut" Text="-" Width="68" Foreground="#FF000D97" FontWeight="Bold"/>
+            <Separator/>
+            <WrapPanel x:Name="pnlLastSpeeds">
+                <WrapPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Margin" Value="0,0,6,0"/>
+                    </Style>
+                </WrapPanel.Resources>
+                <TextBlock Text="Last In:" FontWeight="Bold"/>
+                <TextBlock Name="lblLastIn" Text="-" Width="64" Foreground="#FF095A00"/>
+                <TextBlock Text="Last Out:" FontWeight="Bold"/>
+                <TextBlock Name="lblLastOut" Text="-" Width="64" Foreground="#FF000D97"/>
+            </WrapPanel>
+            <Image x:Name="imgError" Source="pack://application:,,,/Resources/error_16.png" Height="14" Visibility="Hidden" />
+            <TextBlock Name="lblError" FontWeight="Bold" Foreground="DarkRed"/>
+
+        </StatusBar>
+        <ToolBarTray VerticalAlignment="Top" IsLocked="True" >
+            <ToolBar>
+                <Button Click="btSettings_Click" ToolTip="Open settings window">
+                    <Image Source="pack://application:,,,/Resources/ico_settings.png" Height="16" />
+                </Button>
+                <Button Click="btWizard_Click" ToolTip="Open configuration wizard">
+                    <Image Source="pack://application:,,,/Resources/ico_wizard.png" Height="16" />
+                </Button>
+                <Separator />
+                <Menu>
+                    <MenuItem x:Name="mnSave" IsEnabled="False" Padding="0" BorderBrush="Transparent">
+                        <MenuItem.Header>
+                            <Image Source="pack://application:,,,/Resources/save_16.png">
+                                <Image.Style>
+                                    <Style TargetType="Image">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=mnSave, Path=IsEnabled}" Value="false">
+                                                <Setter Property="Opacity" Value="0.3" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                        </MenuItem.Header>
+                        <MenuItem x:Name="btSaveConfig" Click="btSaveConfig_Click" Header="Save current config" >
+                            <MenuItem.Icon>
+                                <Image Source="pack://application:,,,/Resources/file_settings_16.png" Width="16" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="btSaveImage" Header="Save chart as image" Click="btSaveImage_Click">
+                            <MenuItem.Icon>
+                                <Image Source="pack://application:,,,/Resources/image_24.png" Width="16" Margin="2,0,-2,0" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                </Menu>
+                <Button x:Name="btOpen" ToolTip="Open a SRTG config file" Click="btOpen_Click">
+                    <Image Source="pack://application:,,,/Resources/folder_open_16.png" />
+                </Button>
+                <Separator />
+                <Button x:Name="btAbout" ToolTip="About SRTG application" Margin="4,0,0,0" Click="btAbout_Click">
+                    <Image Source="pack://application:,,,/Resources/info_16.png" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+
+    </Grid>
+</Window>

@@ -1,0 +1,15 @@
+﻿<Window x:Class="Srtg.ConfWizard.WizardWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Srtg.ConfWizard"
+        mc:Ignorable="d"
+        Title="Configuration Wizard" Height="341" Width="405" Icon="/Srtg;component/Resources/ico_wizard.png" WindowStartupLocation="CenterOwner">
+    <Grid>
+        <TextBlock VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="37" TextWrapping="Wrap" Margin="10,10,10,0">
+            Use this wizard to easily find a specific interface on a SNMP aware host and auto-configure SRTG settings.
+        </TextBlock>
+        <Frame x:Name="wizardFrame" Content="Frame" Margin="0,52,0,0" BorderThickness="0,1,0,0" BorderBrush="#FFA6A5A5" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" NavigationUIVisibility="Hidden"/>
+    </Grid>
+</Window>

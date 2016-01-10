@@ -1,0 +1,7 @@
+@ECHO OFF
+
+REG DELETE "HKEY_CLASSES_ROOT\.srtg" /f
+REG DELETE "HKEY_CLASSES_ROOT\Applications\srtg.exe" /f
+
+ECHO.
+PAUSE
