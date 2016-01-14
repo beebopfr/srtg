@@ -4,7 +4,7 @@
 
 !include "LogicLib.nsh"
 !include "x64.nsh"
-!include "DotNetChecker.nsh"
+!include "redist-net45.nsh"
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "SRTG"
@@ -87,13 +87,24 @@ Function .onInit
   !endif
   
   !insertmacro MUI_LANGDLL_DISPLAY
-  
-  !insertmacro CheckNetFramework 451
+	
+	Call REDIST_NET45_Check
+  ${If} $REDIST_NET45_INSTALLED == "No"
+    MessageBox MB_OK|MB_ICONINFORMATION "${PRODUCT_NAME} require .NET Framework 4.5.2.$\n.NET 4.5.2 will be downloaded and installed during setup."
+  ${EndIf}
+	
 FunctionEnd
 
 Section "SectionPrincipale" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite try
+	
+	; .NET installation
+  ${If} $REDIST_NET45_INSTALLED == "No"
+    DetailPrint ".NET Framework 4.5.2 is missing and will be installed"
+    Call REDIST_NET45_Install
+  ${EndIf}
+	
   File "${COMPILEDIR}\SnmpSharpNet.dll"
   File "${COMPILEDIR}\Srtg.exe"
   CreateDirectory "$SMPROGRAMS\Srtg"
