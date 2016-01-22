@@ -7,31 +7,20 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Srtg.DatasGathering {
-    public class SnmpHelper {
+    public class SnmpHelper : SnmpSharpNet.SimpleSnmp, IDisposable {
 
         const int SNMP_TIMEOUT = 3000;
         const int SNMP_RETRY = 2;
 
-        private string _host;
-        private uint _port;
-        private string _community;
         private SnmpSharpNet.SnmpVersion _ver;
-        private SnmpSharpNet.SimpleSnmp _snmp;
 
-        public SnmpHelper(string host, string community, SnmpSharpNet.SnmpVersion ver = SnmpSharpNet.SnmpVersion.Ver2, uint port = 161) {
-            this._host = host;
+        public SnmpHelper(string host, string community, SnmpSharpNet.SnmpVersion ver = SnmpSharpNet.SnmpVersion.Ver2, int port = 161)
+            :base(host, port, community, SNMP_TIMEOUT, SNMP_RETRY){
             this._ver = ver;
-            this._port = port;
-            this._community = community;
-
+            this._suppressExceptions = false;
             System.Net.IPAddress ip = null;
             if (!System.Net.IPAddress.TryParse(host, out ip))
                 ip = System.Net.Dns.GetHostAddresses(host).FirstOrDefault();
-
-            _snmp = new SnmpSharpNet.SimpleSnmp(ip.ToString(), (int)port, community, SNMP_TIMEOUT, SNMP_RETRY);
-            _snmp.SuppressExceptions = false;
-            if (!_snmp.Valid)
-                throw new Exception("Invalid SNMP parameters");
         }
 
         public struct WellKnownOids {
@@ -66,7 +55,7 @@ namespace Srtg.DatasGathering {
         public async Task<UInt64[]> GetCounters(string oidIn, string oidOut, CancellationToken cancelToken) {
             Dictionary<SnmpSharpNet.Oid, SnmpSharpNet.AsnType> results = null;
 
-            results = await Task.Run(() => _snmp.Get(_ver, new[] { oidIn, oidOut }), cancelToken);
+            results = await Task.Run(() => this.Get(_ver, new[] { oidIn, oidOut }), cancelToken);
             cancelToken.ThrowIfCancellationRequested();
 
             if (results == null)
@@ -100,10 +89,20 @@ namespace Srtg.DatasGathering {
         }
 
         public async Task<InterfaceInfos[]> GetInterfacesInfos() {
-            var descs = await Task.Run(() => _snmp.Walk(_ver, WellKnownOids.OID_IF_DESCRIPTION));
-            var ips = await Task.Run(() => _snmp.Walk(_ver, WellKnownOids.OID_IF_IP));
-            var aliases = await Task.Run(() => _snmp.Walk(_ver, WellKnownOids.OID_IF_ALIAS));
 
+            Dictionary<SnmpSharpNet.Oid, SnmpSharpNet.AsnType> descs;
+            Dictionary<SnmpSharpNet.Oid, SnmpSharpNet.AsnType> ips;
+            Dictionary<SnmpSharpNet.Oid, SnmpSharpNet.AsnType> aliases;
+
+            try {
+                descs = await Task.Run(() => this.Walk(_ver, WellKnownOids.OID_IF_DESCRIPTION));
+                ips = await Task.Run(() => this.Walk(_ver, WellKnownOids.OID_IF_IP));
+                aliases = await Task.Run(() => this.Walk(_ver, WellKnownOids.OID_IF_ALIAS));
+            }
+            catch(System.NullReferenceException) {
+                // Operation aborted
+                throw new OperationCanceledException();
+            }
             var result = descs.Select(d => new InterfaceInfos() {
                 Index = d.Key.Last(),
                 Description = FilterReceivedString(d.Value.ToString()),
@@ -130,6 +129,11 @@ namespace Srtg.DatasGathering {
             if (!match.Success)
                 return "";
             return match.Groups[1].Value.Trim('.');
+        }
+
+        public void Dispose() {
+            if (this._target != null)
+                this._target.Dispose();
         }
 
         public class InterfaceInfos {

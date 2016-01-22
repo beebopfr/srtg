@@ -10,7 +10,7 @@ namespace Srtg.DatasGathering {
     public class CollectorConfig : INotifyPropertyChanged, IDataErrorInfo, ICloneable {
 
         private SnmpSharpNet.SnmpVersion _snmpVersion;
-        private uint _snmpPort;
+        private int _snmpPort;
         private string _targetHost;
         private string _targetCommunity;
         private uint _targetInterfaceIndex;
@@ -26,7 +26,7 @@ namespace Srtg.DatasGathering {
                 OnPropertyChanged("SnmpVersion");
             }
         }
-        public uint SnmpPort {
+        public int SnmpPort {
             get {
                 return _snmpPort;
             }
@@ -188,7 +188,7 @@ namespace Srtg.DatasGathering {
                         result.SnmpVersion = value == "Ver2" ? SnmpVersion.Ver2 : SnmpVersion.Ver1;
                         break;
                     case "SnmpPort":
-                        result.SnmpPort = uint.Parse(value);
+                        result.SnmpPort = int.Parse(value);
                         break;
                     case "TargetHost":
                         result.TargetHost = value;

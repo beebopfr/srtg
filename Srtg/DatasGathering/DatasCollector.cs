@@ -20,6 +20,7 @@ namespace Srtg.DatasGathering {
         Timer _watchTimer;
         Timer _tickTimer = new Timer(1000) { AutoReset = false };
         TimeSpan _waitStartedTime;
+        SnmpHelper snmp;
         System.Threading.CancellationTokenSource GetDatasCancelTokenSource = new System.Threading.CancellationTokenSource();
 
         public DatasCollector(CollectorConfig config) {
@@ -67,7 +68,7 @@ namespace Srtg.DatasGathering {
             if (this.State == CollectorState.Stopped)
                 return;
 
-            var snmp = new SnmpHelper(Config.TargetHost, Config.TargetCommunity, Config.SnmpVersion, Config.SnmpPort);
+            snmp = new SnmpHelper(Config.TargetHost, Config.TargetCommunity, Config.SnmpVersion, Config.SnmpPort);
 
             ulong[] values = null;
             Exception error = null;
@@ -129,7 +130,7 @@ namespace Srtg.DatasGathering {
             }
             catch (TaskCanceledException) { }
             catch (AggregateException ex) {
-                if (ex.GetBaseException() is TaskCanceledException)
+                if (ex.GetBaseException() is TaskCanceledException || ex.GetBaseException() is OperationCanceledException)
                     return;
                 throw;
             }
@@ -147,6 +148,8 @@ namespace Srtg.DatasGathering {
             this._tickTimer.Dispose();
 
             this.GetDatasCancelTokenSource.Cancel();
+            if (this.snmp != null)
+                this.snmp.Dispose();
             
             this.StateChanged = null;
             this.DatasChanged = null;

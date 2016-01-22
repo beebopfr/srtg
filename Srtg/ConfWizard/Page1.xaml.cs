@@ -19,10 +19,11 @@ namespace Srtg.ConfWizard {
     /// <summary>
     /// Logique d'interaction pour Page1.xaml
     /// </summary>
-    public partial class Page1 : Page, INotifyPropertyChanged {
+    public partial class Page1 : Page, INotifyPropertyChanged, IDisposable {
 
         NavigationService _nav;
         public List<ValidationError> _validationErrors = new List<ValidationError>();
+        DatasGathering.SnmpHelper snmp;
 
         public DatasGathering.CollectorConfig Config { get; set; }
         public event Action<DatasGathering.CollectorConfig> WizardFinished;
@@ -52,6 +53,7 @@ namespace Srtg.ConfWizard {
             }
             catch (System.Net.Sockets.SocketException ex) { error = ex.Message; }
             catch (SnmpSharpNet.SnmpException ex2) { error = ex2.Message; }
+            catch (OperationCanceledException) { return; }
 
             this.grdLoading.Visibility = Visibility.Hidden;
 
@@ -69,7 +71,7 @@ namespace Srtg.ConfWizard {
 
         private async Task<DatasGathering.SnmpHelper.InterfaceInfos[]> RetrieveInterfacesInfos() {
 
-            var snmp = new DatasGathering.SnmpHelper(
+            snmp = new DatasGathering.SnmpHelper(
                 Config.TargetHost, 
                 Config.TargetCommunity,
                 Config.SnmpVersion,
@@ -89,6 +91,11 @@ namespace Srtg.ConfWizard {
             else
                 _validationErrors.Remove(e.Error);
             btNext.IsEnabled = _validationErrors.Count == 0;
+        }
+
+        public void Dispose() {
+            if (this.snmp != null)
+                this.snmp.Dispose();
         }
     }
 }

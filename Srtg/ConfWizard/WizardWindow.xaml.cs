@@ -22,9 +22,11 @@ namespace Srtg.ConfWizard {
 
         public DatasGathering.CollectorConfig Config { get; set; }
 
+        private Page1 page1;
+
         public WizardWindow() {
             InitializeComponent();
-            var page1 = new Page1();
+            page1 = new Page1();
             page1.WizardFinished += Page1_WizardFinished;
             this.wizardFrame.Navigate(page1);
         }
@@ -34,6 +36,12 @@ namespace Srtg.ConfWizard {
             this.Config.GatherInterval = 1000;
             this.DialogResult = true;
             this.Close();
+        }
+
+        private void Window_Closed(object sender, EventArgs e) {
+            // Dispose eventual snmp socket
+            if (page1 != null)
+                page1.Dispose();
         }
     }
 }
