@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Srtg"
         mc:Ignorable="d"
-        Title="About SRTG" Height="185" Width="270" ResizeMode="NoResize" Icon="Resources/info_16.png" WindowStartupLocation="CenterOwner">
+        Title="About SRTG" Height="185" Width="280" ResizeMode="NoResize" Icon="Resources/info_16.png" WindowStartupLocation="CenterOwner">
     <Grid>
         <Image Source="pack://application:,,,/Resources/srtg_128.png" VerticalAlignment="Top" HorizontalAlignment="Left" Width="96" Margin="0,10,0,0" />
         <TextBlock HorizontalAlignment="Left" Margin="92,16,0,0" Text="SRTG" FontWeight="Bold" FontSize="16" Foreground="#FF004AEA" Height="21" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="92,42,0,0" Text="SNMP Realtime Traffic Grapher" VerticalAlignment="Top"/>
+        <TextBlock Margin="92,42,9,0" Text="SNMP Realtime Traffic Grapher" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="94,63,0,0" Text="Created by :" VerticalAlignment="Top" FontSize="10"/>
         <TextBlock HorizontalAlignment="Left" Margin="152,63,0,0" VerticalAlignment="Top" FontSize="10">
             <Hyperlink x:Name="lnkBeebop" NavigateUri="http://beebop.fr" RequestNavigate="lnkBeebop_RequestNavigate">Beebop</Hyperlink>
