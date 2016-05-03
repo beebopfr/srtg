@@ -85,7 +85,9 @@ namespace Srtg.DatasGathering {
                 Config._Counters64 = false;
             }
 
-            Config._Counters64 = r != null;
+            Config._Counters64 = r != null 
+                && !(r.First().Value is SnmpSharpNet.V2Error)
+                 && !(r.First().Value is SnmpSharpNet.Null);
         }
 
         private async Task GetDatas() {                 
