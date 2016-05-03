@@ -30,22 +30,25 @@ namespace Srtg.DatasGathering {
             public const string OID_IF_MAC = ".1.3.6.1.2.1.2.2.1.6";
             public const string OID_IF_OUT_OCTET = ".1.3.6.1.2.1.2.2.1.16";
             public const string OID_IF_IN_OCTET = ".1.3.6.1.2.1.2.2.1.10";
+            public const string OID_IF_OUT_OCTET_64 = ".1.3.6.1.2.1.31.1.1.1.10";
+            public const string OID_IF_IN_OCTET_64 = ".1.3.6.1.2.1.31.1.1.1.6";
             public const string OID_IF_IP = ".1.3.6.1.2.1.4.20.1.2";
             public const string OID_SYSNAME = ".1.3.6.1.2.1.1.5.0";
             public const string OID_SYSDESCR = ".1.3.6.1.2.1.1.1.0";
             public const string OID_IF_ALIAS = ".1.3.6.1.2.1.31.1.1.1.18";
         }
 
-        public async Task<UInt64[]> GetCounters(int ifIndex, CancellationToken cancelToken) {
+        public async Task<UInt64[]> GetCounters(int ifIndex, bool counters64, CancellationToken cancelToken) {
 
-            var oid_in = string.Format("{0}.{1}", WellKnownOids.OID_IF_IN_OCTET, ifIndex);
-            var oid_out = string.Format("{0}.{1}", WellKnownOids.OID_IF_OUT_OCTET, ifIndex);
+
+            var oid_in = string.Format("{0}.{1}", counters64 ? WellKnownOids.OID_IF_IN_OCTET_64 : WellKnownOids.OID_IF_IN_OCTET, ifIndex);
+            var oid_out = string.Format("{0}.{1}", counters64 ? WellKnownOids.OID_IF_OUT_OCTET_64 : WellKnownOids.OID_IF_OUT_OCTET, ifIndex);
 
             return await GetCounters(oid_in, oid_out);
 
         }
-        public async Task<UInt64[]> GetCounters(int ifIndex) {
-            return await GetCounters(ifIndex, new CancellationToken());
+        public async Task<UInt64[]> GetCounters(int ifIndex, bool counters64) {
+            return await GetCounters(ifIndex, counters64, new CancellationToken());
         }
 
         public async Task<UInt64[]> GetCounters(string oidIn, string oidOut) {
@@ -97,7 +100,7 @@ namespace Srtg.DatasGathering {
             try {
                 descs = await Task.Run(() => this.Walk(_ver, WellKnownOids.OID_IF_DESCRIPTION));
                 ips = await Task.Run(() => this.Walk(_ver, WellKnownOids.OID_IF_IP));
-                aliases = await Task.Run(() => this.Walk(_ver, WellKnownOids.OID_IF_ALIAS));
+                aliases =  await Task.Run(() => this.Walk(_ver, WellKnownOids.OID_IF_ALIAS));
             }
             catch(System.NullReferenceException) {
                 // Operation aborted

@@ -15,6 +15,7 @@ namespace Srtg.DatasGathering {
         private string _targetCommunity;
         private uint _targetInterfaceIndex;
         private int _gatherInterval;
+        public bool? _Counters64;
 
         public SnmpVersion SnmpVersion {
             get {
@@ -33,6 +34,7 @@ namespace Srtg.DatasGathering {
 
             set {
                 _snmpPort = value;
+                _Counters64 = null;
                 OnPropertyChanged("SnmpPort");
             }
         }
@@ -43,6 +45,7 @@ namespace Srtg.DatasGathering {
 
             set {
                 _targetHost = value;
+                _Counters64 = null;
                 OnPropertyChanged("TargetHost");
             }
         }

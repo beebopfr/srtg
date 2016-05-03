@@ -57,9 +57,35 @@ namespace Srtg.DatasGathering {
                 throw new InvalidOperationException("No available data to calculate time delta");
             var last = Datas.Last(dt => !dt.IsError);
             var ellapsed = _currDatas.TimeStamp.Subtract(last.TimeStamp);
-            _currDatas.InSpeed = (double)(_currDatas.InCounter - last.InCounter) / ellapsed.TotalSeconds;
-            _currDatas.OutSpeed = (double)(_currDatas.OutCounter - last.OutCounter) / ellapsed.TotalSeconds;
+
+            var diffIn = _currDatas.InCounter - last.InCounter;
+            var diffOut = _currDatas.OutCounter - last.OutCounter;
+
+            // Counter loop handling
+            if (_currDatas.InCounter < last.InCounter)
+                diffIn = (Config._Counters64.GetValueOrDefault() ? UInt64.MaxValue : UInt32.MaxValue) - last.InCounter + _currDatas.InCounter;
+            if (_currDatas.OutCounter < last.OutCounter)
+                diffOut = (Config._Counters64.GetValueOrDefault() ? UInt64.MaxValue : UInt32.MaxValue) - last.OutCounter + _currDatas.OutCounter;
+
+            _currDatas.InSpeed = (double)diffIn / ellapsed.TotalSeconds;
+            _currDatas.OutSpeed = (double)diffOut / ellapsed.TotalSeconds;
             Debug.Print("In : {0}b/s, Out {1}b/s", _currDatas.InBitsSpeed, _currDatas.OutBitsSpeed);
+        }
+
+        private void TestCounter64() {
+            if (Config._Counters64.HasValue)
+                return;
+
+            Dictionary<SnmpSharpNet.Oid, SnmpSharpNet.AsnType> r = null;
+            try {
+                r = new SnmpSharpNet.SimpleSnmp(Config.TargetHost, Config.SnmpPort, Config.TargetCommunity, 2000, 2)
+                    .Get(Config.SnmpVersion, new [] { SnmpHelper.WellKnownOids.OID_IF_IN_OCTET_64 + "." + Config.TargetInterfaceIndex.ToString() });
+            }
+            catch {
+                Config._Counters64 = false;
+            }
+
+            Config._Counters64 = r != null;
         }
 
         private async Task GetDatas() {                 
@@ -73,8 +99,10 @@ namespace Srtg.DatasGathering {
             ulong[] values = null;
             Exception error = null;
 
+            //TestCounter64();
+
             try {
-                values = await snmp.GetCounters((int)Config.TargetInterfaceIndex, this.GetDatasCancelTokenSource.Token);
+                values = await snmp.GetCounters((int)Config.TargetInterfaceIndex, Config._Counters64 ?? false, this.GetDatasCancelTokenSource.Token);
             }
             catch (OperationCanceledException) {
                 return;
