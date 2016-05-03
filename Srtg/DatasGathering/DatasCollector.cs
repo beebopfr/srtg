@@ -99,7 +99,7 @@ namespace Srtg.DatasGathering {
             ulong[] values = null;
             Exception error = null;
 
-            //TestCounter64();
+            TestCounter64();
 
             try {
                 values = await snmp.GetCounters((int)Config.TargetInterfaceIndex, Config._Counters64 ?? false, this.GetDatasCancelTokenSource.Token);
