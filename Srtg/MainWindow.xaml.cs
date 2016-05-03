@@ -138,7 +138,8 @@ namespace Srtg {
         }
 
         private void btWizard_Click(object sender, RoutedEventArgs e) {
-            var wiz = new ConfWizard.WizardWindow() { Owner = this };
+            var conf = _collector == null ? DatasGathering.CollectorConfig.Default() : _collector.Config;
+            var wiz = new ConfWizard.WizardWindow(conf) { Owner = this };
             if (true == wiz.ShowDialog()) {
                 OpenSettings(wiz.Config);
             }

@@ -33,9 +33,6 @@ namespace Srtg.ConfWizard {
             InitializeComponent();
             this.iVersion.Items.Add(SnmpSharpNet.SnmpVersion.Ver1);
             this.iVersion.Items.Add(SnmpSharpNet.SnmpVersion.Ver2);
-            this.Config = DatasGathering.CollectorConfig.Default();
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs("Config"));
         }
 
         private void ShowErrorInfo(string msg) {
@@ -83,6 +80,8 @@ namespace Srtg.ConfWizard {
 
         private void Page_Loaded(object sender, RoutedEventArgs e) {
             this._nav = NavigationService.GetNavigationService(this);
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs("Config"));
         }
 
         private void Grid_ValidationError(object sender, ValidationErrorEventArgs e) {

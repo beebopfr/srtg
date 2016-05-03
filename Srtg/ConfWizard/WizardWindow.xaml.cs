@@ -24,12 +24,13 @@ namespace Srtg.ConfWizard {
 
         private Page1 page1;
 
-        public WizardWindow() {
+        public WizardWindow(DatasGathering.CollectorConfig config = null) {
             InitializeComponent();
-            page1 = new Page1();
+            page1 = new Page1() { Config = config };
             page1.WizardFinished += Page1_WizardFinished;
             this.wizardFrame.Navigate(page1);
         }
+
 
         private void Page1_WizardFinished(DatasGathering.CollectorConfig conf) {
             this.Config = conf;
